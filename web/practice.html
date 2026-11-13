@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IB 分章练习</title>
+<link rel="stylesheet" href="vendor/katex.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ 视图 1：选科目 + 选章节 ============ -->
+<section id="viewHome" class="view">
+  <header class="home-head">
+    <h1>分章练习</h1>
+    <p class="sub" id="totalInfo"></p>
+  </header>
+
+  <div class="subject-bar" id="subjectBar"></div>
+
+  <div class="chapter-head">
+    <h2 id="subjectName"></h2>
+    <div class="chapter-actions">
+      <button id="btnContinue" class="primary" hidden>继续上次</button>
+      <button id="btnRandom" class="ghost">随机 20 题</button>
+    </div>
+  </div>
+
+  <div id="chapterList" class="chapter-list"></div>
+
+  <footer class="home-foot">
+    <span>进度保存在本机 · </span>
+    <button id="btnReset" class="linkbtn">清除全部进度</button>
+  </footer>
+</section>
+
+<!-- ============ 视图 2：练习 ============ -->
+<section id="viewPractice" class="view" hidden>
+  <header class="bar">
+    <button id="btnBack" class="iconbtn" title="返回章节（Esc）">←</button>
+    <div class="bar-mid">
+      <div class="bar-title" id="chapterTitle"></div>
+      <div class="bar-sub" id="chapterSub"></div>
+    </div>
+    <div class="bar-right">
+      <span class="counter" id="counter"></span>
+    </div>
+  </header>
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+  <main class="stage">
+    <article class="card question">
+      <div class="qhead">
+        <span class="qref" id="qref"></span>
+        <span class="chips" id="qchips"></span>
+      </div>
+      <div class="md" id="qbody"></div>
+    </article>
+
+    <div class="answer-wrap">
+      <button id="btnReveal" class="reveal">看答案 <kbd>空格</kbd></button>
+      <article class="card answer" id="answerCard" hidden>
+        <h3>评分标准</h3>
+        <div class="md" id="abody"></div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="pad">
+    <button id="btnPrev" class="navbtn">上一题</button>
+    <button id="btnFlag" class="flagbtn" title="标记需要复习（F）">标记复习</button>
+    <button id="btnNext" class="navbtn next">下一题</button>
+  </footer>
+</section>
+
+<!-- ============ 视图 3：章节完成 ============ -->
+<section id="viewDone" class="view" hidden>
+  <div class="done-card">
+    <div class="done-emoji">✓</div>
+    <h2 id="doneTitle"></h2>
+    <p id="doneStat"></p>
+    <div class="done-actions">
+      <button id="btnRedoFlagged" class="primary">只做标记的 <span id="flaggedCount"></span> 题</button>
+      <button id="btnRestart">重做本章</button>
+      <button id="btnDoneBack" class="ghost">回到章节列表</button>
+    </div>
+  </div>
+</section>
+
+<script src="vendor/katex.min.js"></script>
+<script src="vendor/marked.umd.js"></script>
+<script src="data/index.js"></script>
+<script src="practice.js"></script>
+</body>
+</html>

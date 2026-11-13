@@ -1,0 +1,41 @@
+# 依赖
+.venv/
+chrome-rv/
+chrome-profile/
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+
+# 凭证（绝对不能提交）
+.env
+supabase/.env
+cookies.json
+storage_state.json
+*.cookie
+token*.txt
+
+# 本地中间产物
+*.log
+web/_*.png
+questions/**/images/
+**/images/*.jpg
+**/images/*.jpeg
+**/images/*.png
+**/images/*.gif
+**/images/*.svg
+**/images/*.webp
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 抓取/清洗脚本与本地中间产物（仓库只放成品）
+rv_*.py
+cookies.py
+chrome_cookies.py
+*.log
+web/_*
+DELIVERY.md
+STATS.md
+golem/
