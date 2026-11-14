@@ -1,6 +1,6 @@
 # IB 题库 · 分章练习
 
-IB 全科题库，11344 道题，按章节组织，逐题练习——答案默认收起，自己先做，再对评分标准。
+IB 全科题库，10812 道题（本地 11344 个文件，同一题多处归档的已去重），按章节组织，逐题练习——答案默认收起，自己先做，再对评分标准。
 
 界面是 Duolingo 风格：绿色圆角大按钮、进度环、完成章节撒花。
 
@@ -21,7 +21,7 @@ IB 全科题库，11344 道题，按章节组织，逐题练习——答案默�
 | Business Mgmt | 222 |
 | English B | 87 |
 | Ab Initio French / Spanish | 90 |
-| **合计** | **11344**（26 个科目，14 个学科） |
+| **合计** | **10812**（26 个科目，14 个学科；去重后） |
 
 每道题包含：题面（Markdown + LaTeX）、评分标准（A1/M1 给分点）、难度（easy/medium/hard）、分值、配图。
 
@@ -53,7 +53,7 @@ supabase/schema.sql
 # 2. 填凭证
 cp .env.example supabase/.env   # 填 URL / service_role key
 
-# 3. 导入题目（约 11344 行）
+# 3. 导入题目（约 10812 行）
 python supabase/import.py
 
 # 4. 上传配图到 Storage 的 questions 桶（约 609 MB）
@@ -67,7 +67,7 @@ python supabase/upload_images.py
 
 ```
 web/            前端（index.html / app.js / style.css / vendor / data）
-questions/      11344 个 Markdown，一题一个文件，按 科目/topic/小节/ 分层
+questions/      11344 个 Markdown（去重后入库 10812 题），一题一个文件，按 科目/topic/小节/ 分层
 supabase/       建表 SQL、导入脚本、图片上传脚本
 ```
 

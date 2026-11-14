@@ -480,7 +480,7 @@
 | [HI1177](History%20of%20Asia%20and%20Oceania/Cold%20War%20Conflicts%20in%20Asia/HI1177.md) | 3 | easy |  |
 | [HI1178](History%20of%20Asia%20and%20Oceania/Cold%20War%20Conflicts%20in%20Asia/HI1178.md) | 4 | easy |  |
 
-### The People’s Republic of China（34）
+### The People's Republic of China（34）
 
 | 题号 | 分值 | 难度 | 计算器 |
 |---|---|---|---|

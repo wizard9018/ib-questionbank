@@ -72,6 +72,8 @@ def collect(limit=None):
     if limit:
         mds = mds[:limit]
 
+    seen = {}   # (subject_slug, ref) -> 记录；同一题在多处归档时只留最具体的
+
     for i, p in enumerate(mds, 1):
         rel = p.relative_to(QUESTIONS).parts
         if len(rel) < 4:
@@ -80,6 +82,23 @@ def collect(limit=None):
         fm, body, ms = parse_md(p)
         if not body:
             continue
+
+        def generic(t, st):
+            return t.strip().lower().startswith("scientific skills") or st.strip().lower() == "unassigned"
+
+        slug_pre = subject_name.lower().replace(" ", "-").replace(".", "")
+        ref_pre = fm.get("reference") or p.stem
+        k = (slug_pre, ref_pre)
+        if k in seen:
+            prev = seen[k]
+            # 已存的是兜底分类、新的是具体章节 -> 用新的替换掉
+            if generic(prev["topic"], prev["subtopic"]) and not generic(topic_name, subtopic_name):
+                seen[k] = None   # 稍后覆盖，先标记
+                replace_key = k
+            else:
+                continue
+        else:
+            replace_key = None
 
         slug = subject_name.lower().replace(" ", "-").replace(".", "")
         group_key = re.sub(r"-(hl|sl)$", "", slug)
@@ -114,6 +133,19 @@ def collect(limit=None):
             "calculator": (fm.get("calculator", "").lower() == "true"),
             "images": [],
         })
+
+        rec = questions[-1]
+        if replace_key is not None or replace_key == ():
+            pass
+        if k in seen and seen[k] is None:
+            # 覆盖之前那条
+            for idx in range(len(questions) - 2, -1, -1):
+                q = questions[idx]
+                if (q["subject_slug"], q["ref"]) == k:
+                    questions[idx] = rec
+                    questions.pop()
+                    break
+        seen[k] = rec
 
         if i % 2000 == 0:
             print(f"  解析 {i}/{len(mds)} …")

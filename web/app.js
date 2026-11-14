@@ -58,6 +58,11 @@
   }
   const GROUPS = groupIndex();
   const shortName = (n) => n.replace(/^IB Mathematics\s+/, "Math ").replace(/^IB\s+/, "");
+  // Storage 里的路径用的是原始目录名（IB Physics HL），不是 slug
+  const storageDir = (slug) => {
+    const s = INDEX.find((x) => x.slug === slug);
+    return s ? s.name : slug;
+  };
 
   /* ---------- 进度存储 ---------- */
   const STORE_KEY = "ib-practice-v2";
@@ -91,8 +96,7 @@
   let activeSubject = null;   // {name, topics: [...]}
   let session = null;
 
-  function loadSubject(slug) {
-    if (window.RV_LOADED[slug]) return Promise.resolve(window.RV_LOADED[slug]);
+  function loadLocalBundle(slug) {
     return new Promise((res, rej) => {
       const s = document.createElement("script");
       s.src = "data/" + slug + ".js";
@@ -100,6 +104,67 @@
       s.onerror = () => rej(new Error("加载失败：" + slug));
       document.head.appendChild(s);
     });
+  }
+
+  /* 从 Supabase 拉一个科目的全部题目，转成本地 bundle 的结构 */
+  async function loadFromSupabase(slug) {
+    const cfg = window.IB_CONFIG;
+    const base = cfg.supabaseUrl.replace(/\/$/, "");
+    const headers = { apikey: cfg.supabaseKey, Authorization: "Bearer " + cfg.supabaseKey };
+    const sel = "ref,topic,subtopic,body,mark_scheme,difficulty,marks,paper,calculator";
+    const url = base + "/rest/v1/questions?subject_slug=eq." +
+      encodeURIComponent(slug) + "&select=" + sel + "&order=topic,subtopic,ref";
+
+    const resp = await fetch(url, { headers });
+    if (!resp.ok) throw new Error("Supabase " + resp.status + " " + (await resp.text()).slice(0, 120));
+    const rows = await resp.json();
+
+    const tMap = new Map();
+    rows.forEach((r) => {
+      if (!tMap.has(r.topic)) tMap.set(r.topic, new Map());
+      const sMap = tMap.get(r.topic);
+      if (!sMap.has(r.subtopic)) sMap.set(r.subtopic, []);
+      sMap.get(r.subtopic).push({
+        ref: r.ref,
+        body: withImageUrls(r.body, storageDir(slug), r.topic, r.subtopic),
+        markScheme: r.mark_scheme ? withImageUrls(r.mark_scheme, storageDir(slug), r.topic, r.subtopic) : "",
+        difficulty: r.difficulty || "",
+        marks: r.marks || "",
+        paper: r.paper || "",
+        calculator: !!r.calculator,
+      });
+    });
+
+    return {
+      slug,
+      name: slug,
+      topics: [...tMap.entries()].map(([name, sMap]) => ({
+        name,
+        subtopics: [...sMap.entries()].map(([n, questions]) => ({ name: n, questions })),
+      })),
+    };
+  }
+
+  /* 把 markdown 里的 images/xxx.png 换成 Storage 公网 URL */
+  function withImageUrls(md, slug, topic, subtopic) {
+    const cfg = window.IB_CONFIG;
+    if (!cfg || !cfg.supabaseUrl) return md;
+    const base = cfg.supabaseUrl.replace(/\/$/, "") + "/storage/v1/object/public/" +
+      cfg.imageBucket + "/";
+    const dir = slug + "/" + topic + "/" + subtopic + "/";
+    return md.replace(/\]\(images\//g, "](" + base + encodeURI(dir) + "images/");
+  }
+
+  function loadSubject(slug) {
+    if (window.RV_LOADED[slug]) return Promise.resolve(window.RV_LOADED[slug]);
+    const cfg = window.IB_CONFIG;
+    if (cfg && cfg.supabaseUrl && cfg.supabaseKey) {
+      return loadFromSupabase(slug).then((b) => {
+        window.RV_LOADED[slug] = b;
+        return b;
+      });
+    }
+    return loadLocalBundle(slug);
   }
 
   function mergeSubjects(subs) {
@@ -118,10 +183,15 @@
         });
       });
     });
-    const topics = [...topicMap.entries()].map(([name, stMap]) => ({
-      name,
-      subtopics: [...stMap.entries()].map(([n, qs]) => ({ name: n, questions: qs })),
-    }));
+    // 去重后可能出现 0 题的章节，直接剔掉
+    const topics = [...topicMap.entries()]
+      .map(([name, stMap]) => ({
+        name,
+        subtopics: [...stMap.entries()]
+          .filter(([, qs]) => qs.length > 0)
+          .map(([n, qs]) => ({ name: n, questions: qs })),
+      }))
+      .filter((t) => t.subtopics.length > 0);
     return { name: subs.length === 1 ? subs[0].name : subs[0].name.replace(/\s+(HL|SL)$/, ""), topics };
   }
 

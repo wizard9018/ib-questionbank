@@ -1,8 +1,6 @@
-/* 数据源开关：默认读本地 data/*.js；填了 Supabase 就改从云端拉 */
+/* 数据源：填了 URL + publishable key 就从 Supabase 拉题目和图片 */
 window.IB_CONFIG = {
-  // 留空 = 用本地 data/*.js（离线可跑）
-  supabaseUrl: "",
-  supabaseKey: "",
-  // 题目配图在 Storage 里的桶名
+  supabaseUrl: "https://fclcyabifwllunfossid.supabase.co",
+  supabaseKey: "sb_publishable_XBkLPI_2qtiv8IkACaK8Uw_BTMSQnjH",
   imageBucket: "questions",
 };
