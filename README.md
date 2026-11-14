@@ -4,6 +4,10 @@ IB 全科题库，10812 道题（本地 11344 个文件，同一题多处归档�
 
 界面是 Duolingo 风格：绿色圆角大按钮、进度环、完成章节撒花。
 
+**在线版**：https://wizard9018.github.io/ib-questionbank/
+
+题库在 Supabase（10812 题），配图在 Supabase Storage（11921 张）。
+
 ## 规模
 
 | 科目 | 题目数 |

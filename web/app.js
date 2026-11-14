@@ -452,6 +452,6 @@
     return;
   }
   const totalQ = GROUPS.reduce((a, b) => a + b.count, 0);
-  $("totalInfo").textContent = GROUPS.length + " 个学科 · " + totalQ + " 题 · 按章节逐题练习，答案默认收起";
+  $("totalInfo").textContent = GROUPS.length + " 个学科 · 按章节逐题练习，答案默认收起（同一题多处归档的已去重）";
   openSubject(activeKey);
 })();
